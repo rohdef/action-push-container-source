@@ -1,0 +1,44 @@
+name: Building and distributing build-scan-push action
+on: [ push ]
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out repository: ${{ github.repository }}"
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Build action
+        run: |
+          ./gradlew build
+
+          mkdir distribution
+          cp -r assets/* distribution/
+          cp -r build/js/* distribution/
+
+      - name: Check out distribution repository
+        uses: actions/checkout@v4
+        with:
+          path: action-deploy
+          repository: rohdef/action-push-container
+          ssh-key: ${{ secrets.BUILD_SSH_KEY }}
+      - name: Update deployment
+        run: |
+          rm -rf ./action-deploy/*
+          cp -r ./distribution/* ./action-deploy/
+          cd action-deploy
+          git config user.email "rohdef+actions@rohdef.dk"
+          git config user.name "${{ github.actor }}"
+          git add .
+          git commit --allow-empty -m "Updating distribution"
+          git push
