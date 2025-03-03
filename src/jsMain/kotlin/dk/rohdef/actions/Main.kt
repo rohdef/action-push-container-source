@@ -58,6 +58,8 @@ suspend fun main() {
 
             val actionEnvironment = ActionEnvironment(process)
 
+            info("Starting push workflow with the following input:\n$inputs")
+
             val autoTags: List<String> = when (inputs.autoTagging.strategy) {
                 Inputs.AutoTagging.Strategy.TAGS_AS_RELEASE -> listOf()
                 Inputs.AutoTagging.Strategy.DISABLED -> emptyList()
@@ -79,7 +81,7 @@ suspend fun main() {
                     info("docker tag \\")
                     info("""\t"${inputs.imageId}" \""")
                     info("""\t"$destination" """)
-                    info("""docker push "$destination""")                       
+                    info("""docker push "$destination" """)
                 }
             }
 

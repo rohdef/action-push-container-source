@@ -1,5 +1,8 @@
 package dk.rohdef.actions.github
 
+import com.charleskorn.kaml.Yaml
+import kotlinx.serialization.decodeFromString
+
 data class Inputs(
     val imageId: ImageId,
     val destinationHosts: DestinationHosts,
@@ -22,7 +25,8 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : DestinationHosts {
-                TODO()
+                val hosts: List<String> = Yaml.default.decodeFromString(value)
+                return DestinationHosts(hosts)
             }
         }
     }
@@ -32,7 +36,8 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : DestinationImageNames {
-                TODO()
+                val names: List<String> = Yaml.default.decodeFromString(value)
+                return DestinationImageNames(names)
             }
         }
     }
@@ -42,7 +47,8 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : AutoTagging {
-                TODO()
+                val strategy = Strategy.valueOf(value)
+                return AutoTagging(strategy)
             }
         }
 
@@ -57,7 +63,8 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : DestinationTags {
-                TODO()
+                val tags: List<String> = Yaml.default.decodeFromString(value)
+                return DestinationTags(tags)
             }
         }
     }
