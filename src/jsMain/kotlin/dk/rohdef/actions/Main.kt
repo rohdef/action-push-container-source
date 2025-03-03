@@ -72,16 +72,30 @@ suspend fun main() {
             }
 
             info("The following images with tags will be pushed: ${taggedImages.joinToString(", ")}")
+            val imagesToPush = mutableListOf<String>()
             inputs.destinationHosts.hosts.forEach { host ->
                 info("\tPusing images with tags to [$host]")
 
                 taggedImages.forEach { imageAndTag ->
                     val destination = "$host/$imageAndTag"
 
-                    info("docker tag \\")
-                    info("""\t"${inputs.imageId}" \""")
-                    info("""\t"$destination" """)
-                    info("""docker push "$destination" """)
+                    val tagExecution = Exec.getExecOutput(
+                        "docker",
+                        arrayOf("tag", inputs.imageId.value, destination),
+                    ).await()
+
+                    if (tagExecution.exitCode != 0) {
+                        error("Could not add tag to image")
+                        error("    image: ${inputs.imageId.value}")
+                        error("    tag: ${destination}")
+                        setFailed("Could not add tag [$destination] to image [${inputs.imageId.value}]'")
+                    }
+
+                    imagesToPush += destination
+                }
+
+                imagesToPush.forEach { image ->
+                    info("""docker push "$image" """)
                 }
             }
 
