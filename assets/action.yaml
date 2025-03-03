@@ -2,24 +2,24 @@ name: Push container
 description: ""
 
 inputs:
-  imageid:
+  image-id:
     description: "Image ID"
     required: true
-  destinationHosts:
+  destination-hosts:
     description: "Where to upload the artifact to - if only local is desired just use \"localhost:5000\" - trailing slash is not allowed. Must be a text with a yaml array of hosts"
     required: true
     default: |
       - ghcr.io
-  destinationImageNames:
+  destination-image-names:
     description: "Must be a text with a yaml array of hosts"
     required: true
     default: |
       - ${{ github.repository }}
-  autoTagging:
+  auto-tagging:
     description: ""
     required: true
     default: "TAGS_AS_RELEASE"
-  destinationTags:
+  destination-tags:
     description: "Must be a text with a yaml array of hosts."
     required: true
     default: |
@@ -29,7 +29,7 @@ outputs:
   digest:
     description: Image digest for usage in helm charts or other deployments where it is desired to lock the version to this build
 
-  imagesPushed:
+  images-pushed:
     description: Full list (as yaml array) of image names pushed
 
 runs:

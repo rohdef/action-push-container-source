@@ -1,11 +1,11 @@
 package dk.rohdef.actions
 
-import com.charleskorn.kaml.Yaml
 import com.docker.actions_toolkit.lib.docker.Docker
 import com.docker.actions_toolkit.lib.github.GitHub
 import com.github.actions.Exec
 import dk.rohdef.actions.github.Core
 import dk.rohdef.actions.github.Inputs
+import dk.rohdef.actions.github.OutputName
 import kotlinx.coroutines.await
 import node.process.Process
 import node.process.process
@@ -101,7 +101,7 @@ suspend fun main() {
                 info("""docker push "$image" """)
                 imagesPushed += image
             }
-            setOutput("imagesP  ushed", imagesPushed.map { "- $it" }.joinToString("\n"))
+            setOutput(OutputName.IMAGES_PUSHED, imagesPushed.map { "- $it" }.joinToString("\n"))
 
             // TODO when no digest, maybe not fail? Or perhaps make it optional to fail?
             val imageDigestOutput = Exec.getExecOutput(
@@ -112,7 +112,7 @@ suspend fun main() {
                 0 -> {
                     val digest = imageDigestOutput.stdout
                     info("Digest: [$digest]")
-                    setOutput("digest", digest)
+                    setOutput(OutputName.DIGEST, digest)
                 }
 
                 else -> setFailed("Could not get docker image digest")

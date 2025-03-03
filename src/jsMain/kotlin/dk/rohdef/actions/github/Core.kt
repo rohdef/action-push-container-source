@@ -24,7 +24,7 @@ class Core internal constructor() {
         )
     }
 
-    val inputs = Inputs.fromInput(RawCore::getInput)
+    val inputs = Inputs.fromInput { RawCore.getInput(it.actionName) }
 
     suspend fun group(name: String, contents: suspend Core.() -> Unit) {
         RawCore.group(name) {
@@ -32,7 +32,7 @@ class Core internal constructor() {
         }.await()
     }
 
-    fun setOutput(name: String, value: String) = RawCore.setOutput(name, value)
+    fun setOutput(name: OutputName, value: String) = RawCore.setOutput(name.actionName, value)
 
     fun setFailed(message: String) = RawCore.setFailed(message)
 

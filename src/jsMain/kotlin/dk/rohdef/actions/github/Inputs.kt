@@ -70,22 +70,14 @@ data class Inputs(
     }
 
     companion object {
-        fun fromInput(getInput: (String) -> String): Inputs {
+        fun fromInput(getInput: (InputNames) -> String): Inputs {
             return Inputs(
-                ImageId.fromValue(getInput(InputNames.imageId)),
-                DestinationHosts.fromValue(getInput(InputNames.destinationHosts)),
-                DestinationImageNames.fromValue(getInput(InputNames.destinationImageNames)),
-                AutoTagging.fromValue(getInput(InputNames.autoTagging)),
-                DestinationTags.fromValue(getInput(InputNames.destinationTags)),
+                ImageId.fromValue(getInput(InputNames.IMAGE_ID)),
+                DestinationHosts.fromValue(getInput(InputNames.DESTINATION_HOSTS)),
+                DestinationImageNames.fromValue(getInput(InputNames.DESTINATION_IMAGE_NAMES)),
+                AutoTagging.fromValue(getInput(InputNames.AUTO_TAGGING)),
+                DestinationTags.fromValue(getInput(InputNames.DESTINATION_TAGS)),
             )
         }
     }
-}
-
-object InputNames {
-    val imageId = "imageid"
-    val destinationHosts = "destinationHosts"
-    val destinationImageNames = "destinationImageNames"
-    val autoTagging = "autoTagging"
-    val destinationTags = "destinationTags"
 }
