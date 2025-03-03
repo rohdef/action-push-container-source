@@ -47,7 +47,7 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : AutoTagging {
-                val strategy = Strategy.valueOf(value.uppercase()                   )
+                val strategy = Strategy.valueOf(value.uppercase())
                 return AutoTagging(strategy)
             }
         }
