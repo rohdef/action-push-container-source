@@ -28,15 +28,9 @@ inputs:
 outputs:
   digest:
     description: Image digest for usage in helm charts or other deployments where it is desired to lock the version to this build
-#  metadata:
-#    description: 'Build result metadata'
-#
-#  container-image:
-#    description: The random image name used for generation
-#    value: ${{ steps.build-image.outputs.container-image }}
-#  image-digest:
-#    description: The digest of the final image
-#    value: ${{ steps.push-image.outputs.image-digest }}
+
+  imagesPushed:
+    description: Full list (as yaml array) of image names pushed
 
 runs:
   using: node20

@@ -1,5 +1,6 @@
 package dk.rohdef.actions
 
+import com.charleskorn.kaml.Yaml
 import com.docker.actions_toolkit.lib.docker.Docker
 import com.docker.actions_toolkit.lib.github.GitHub
 import com.github.actions.Exec
@@ -93,11 +94,14 @@ suspend fun main() {
 
                     imagesToPush += destination
                 }
-
-                imagesToPush.forEach { image ->
-                    info("""docker push "$image" """)
-                }
             }
+
+            val imagesPushed =  mutableListOf<String>()
+            imagesToPush.forEach { image ->
+                info("""docker push "$image" """)
+                imagesPushed += image
+            }
+            setOutput("imagesP  ushed", imagesPushed.map { "- $it" }.joinToString("\n"))
 
             // TODO when no digest, maybe not fail? Or perhaps make it optional to fail?
             val imageDigestOutput = Exec.getExecOutput(
