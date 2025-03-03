@@ -3,8 +3,27 @@ description: ""
 
 inputs:
   imageid:
-    description: 'Image ID'
+    description: "Image ID"
     required: true
+  destinationHosts:
+    description: "Where to upload the artifact to - if only local is desired just use \"localhost:5000\" - trailing slash is not allowed. Must be a text with a yaml array of hosts"
+    required: true
+    default: |
+      - ghcr.io
+  destinationImageNames:
+    description: "Must be a text with a yaml array of hosts"
+    required: true
+    default: |
+      - ${{ github.repository }}
+  autoTagging:
+    description: ""
+    required: true
+    default: "TAGS_AS_RELEASE"
+  destinationTags:
+    description: "Must be a text with a yaml array of hosts."
+    required: true
+    default: |
+      []
 
 outputs:
   digest:
