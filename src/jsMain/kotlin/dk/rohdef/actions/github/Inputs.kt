@@ -1,5 +1,6 @@
 package dk.rohdef.actions.github
 
+import com.charleskorn.kaml.IncorrectTypeException
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.decodeFromString
 
@@ -14,10 +15,11 @@ data class Inputs(
         val value: String,
     ) {
         companion object {
-            fun fromValue(value: String) : ImageId {
-                println(value)
-                return ImageId(value)
-            }
+            private val inputName = InputName.IMAGE_ID
+
+            fun fromValue(getInput: (InputName) -> String) = fromValue(getInput(inputName))
+
+            fun fromValue(value: String) = ImageId(value)
         }
     }
 
@@ -25,11 +27,11 @@ data class Inputs(
         val hosts: List<String>,
     ) {
         companion object {
-            fun fromValue(value: String) : DestinationHosts {
-                println(value)
-                val hosts: List<String> = Yaml.default.decodeFromString(value)
-                return DestinationHosts(hosts)
-            }
+            private val inputName = InputName.DESTINATION_HOSTS
+
+            fun fromValue(getInput: (InputName) -> String) = fromValue(getInput(inputName))
+
+            fun fromValue(value: String) = DestinationHosts(value.parseYamlList(inputName))
         }
     }
 
@@ -37,11 +39,11 @@ data class Inputs(
         val names: List<String>,
     ) {
         companion object {
-            fun fromValue(value: String) : DestinationImageNames {
-                println(value)
-                val names: List<String> = Yaml.default.decodeFromString(value)
-                return DestinationImageNames(names)
-            }
+            private val inputName = InputName.DESTINATION_IMAGE_NAMES
+
+            fun fromValue(getInput: (InputName) -> String) = fromValue(getInput(inputName))
+
+            fun fromValue(value: String) = DestinationImageNames(value.parseYamlList(inputName))
         }
     }
 
@@ -49,11 +51,11 @@ data class Inputs(
         val strategy: Strategy,
     ) {
         companion object {
-            fun fromValue(value: String) : AutoTagging {
-                println(value)
-                val strategy = Strategy.valueOf(value.uppercase())
-                return AutoTagging(strategy)
-            }
+            private val inputName = InputName.AUTO_TAGGING
+
+            fun fromValue(getInput: (InputName) -> String) = fromValue(getInput(inputName))
+
+            fun fromValue(value: String) = AutoTagging(value.parseEnumInput(inputName))
         }
 
         enum class Strategy {
@@ -66,23 +68,99 @@ data class Inputs(
         val tags: List<String>,
     ) {
         companion object {
-            fun fromValue(value: String) : DestinationTags {
-                println(value)
-                val tags: List<String> = Yaml.default.decodeFromString(value)
-                return DestinationTags(tags)
-            }
+            private val inputName = InputName.DESTINATION_TAGS
+
+            fun fromValue(getInput: (InputName) -> String) = fromValue(getInput(inputName))
+
+            fun fromValue(value: String) = DestinationTags(value.parseYamlList(inputName))
         }
     }
 
     companion object {
         fun fromInput(getInput: (InputName) -> String): Inputs {
             return Inputs(
-                ImageId.fromValue(getInput(InputName.IMAGE_ID)),
-                DestinationHosts.fromValue(getInput(InputName.DESTINATION_HOSTS)),
-                DestinationImageNames.fromValue(getInput(InputName.DESTINATION_IMAGE_NAMES)),
-                AutoTagging.fromValue(getInput(InputName.AUTO_TAGGING)),
-                DestinationTags.fromValue(getInput(InputName.DESTINATION_TAGS)),
+                ImageId.fromValue(getInput),
+                DestinationHosts.fromValue(getInput),
+                DestinationImageNames.fromValue(getInput),
+                AutoTagging.fromValue(getInput),
+                DestinationTags.fromValue(getInput),
             )
         }
+    }
+}
+
+fun Throwable.asParsingError(message: String, defaultErrorContent: String) : Nothing {
+    throw IllegalArgumentException(
+        """
+            $message
+
+            $defaultErrorContent
+        """.trimIndent(),
+        this,
+    )
+}
+
+private inline fun <reified T : Enum<T>> String.parseEnumInput(inputName: InputName): T {
+    val values = enumValues<T>().toList()
+
+    val defaultErrorContent = """
+            Attempted to parse: ${inputName.actionName}
+
+            The input was:
+            --- BEGIN INPUT ---
+            $this
+            --- END  INPUT ---
+
+            Make that the input is an enum of the type ${T::class.simpleName} e.g.,:
+
+            ${inputName.actionName}: ${values.firstOrNull()}
+
+            Valid values are: ${values.joinToString(", ")}
+        """.trimIndent()
+
+    try {
+        return enumValueOf<T>(this.uppercase())
+    } catch (exception: IllegalArgumentException) {
+        exception.asParsingError(
+            "Could not parse to enum: ${exception.message}",
+            defaultErrorContent,
+        )
+    } catch (exception: Exception) {
+        exception.asParsingError(
+            "Unknown error occured when parsing.",
+            defaultErrorContent,
+        )
+    }
+}
+
+private fun <T> String.parseYamlList(inputName: InputName): List<T> {
+    val defaultErrorContent = """
+            Attempted to parse: ${inputName.actionName}
+
+            The input was:
+            --- BEGIN INPUT ---
+            $this
+            --- END  INPUT ---
+
+            Make that the input is a string containing a yaml list of strings, e.g.,:
+
+            ${inputName.actionName}: |
+                - foo
+                - bar
+                - baz
+        """.trimIndent()
+
+    try {
+        return Yaml.default.decodeFromString(this)
+    } catch (exception: IncorrectTypeException) {
+        exception.asParsingError(
+            "Got a YAML parsing error on the type.",
+            defaultErrorContent,
+        )
+    } catch (exception: Throwable) {
+        exception.asParsingError(
+            "Unknown error occured when parsing.",
+            defaultErrorContent,
+        )
     }
 }
