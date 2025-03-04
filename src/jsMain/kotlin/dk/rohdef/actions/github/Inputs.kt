@@ -15,6 +15,7 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : ImageId {
+                println(value)
                 return ImageId(value)
             }
         }
@@ -25,6 +26,7 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : DestinationHosts {
+                println(value)
                 val hosts: List<String> = Yaml.default.decodeFromString(value)
                 return DestinationHosts(hosts)
             }
@@ -36,6 +38,7 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : DestinationImageNames {
+                println(value)
                 val names: List<String> = Yaml.default.decodeFromString(value)
                 return DestinationImageNames(names)
             }
@@ -47,6 +50,7 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : AutoTagging {
+                println(value)
                 val strategy = Strategy.valueOf(value.uppercase())
                 return AutoTagging(strategy)
             }
@@ -63,6 +67,7 @@ data class Inputs(
     ) {
         companion object {
             fun fromValue(value: String) : DestinationTags {
+                println(value)
                 val tags: List<String> = Yaml.default.decodeFromString(value)
                 return DestinationTags(tags)
             }

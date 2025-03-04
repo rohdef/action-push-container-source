@@ -9,7 +9,6 @@ import dk.rohdef.actions.github.OutputName
 import kotlinx.coroutines.await
 import node.process.Process
 import node.process.process
-import kotlin.uuid.ExperimentalUuidApi
 
 suspend fun Core.actionInfo() {
     group("GitHub Actions runtime token ACs") {
@@ -51,7 +50,6 @@ class ActionEnvironment(
     val projectUrl = "$serverUrl/$repository"
 }
 
-@OptIn(ExperimentalUuidApi::class)
 suspend fun main() {
     Core().run(
         {
