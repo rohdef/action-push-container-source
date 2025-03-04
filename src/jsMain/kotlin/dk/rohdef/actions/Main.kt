@@ -67,13 +67,16 @@ suspend fun main() {
                     val lastReferencePart = referenceParts.last()
 
                     val version = when {
-                        referenceParts.subList(0, 2) == listOf("refs", "tags") -> lastReferencePart.replace("^v".toRegex(), "")
+                        referenceParts.subList(0, 2) == listOf("refs", "tags") ->
+                            lastReferencePart.replace("^v".toRegex(), "")
+
                         lastReferencePart == "main" -> "latest"
                         else -> lastReferencePart
                     }
 
                     listOf(version)
                 }
+
                 Inputs.AutoTagging.Strategy.DISABLED -> emptyList()
             }
 
@@ -107,8 +110,8 @@ suspend fun main() {
                 }
             }
 
-            val imagesFailed =  mutableListOf<String>()
-            val imagesPushed =  mutableListOf<String>()
+            val imagesFailed = mutableListOf<String>()
+            val imagesPushed = mutableListOf<String>()
             imageIdsToPush.forEach { imageId ->
                 val pushExecution = Exec.getExecOutput(
                     "docker",
