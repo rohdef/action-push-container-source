@@ -86,7 +86,7 @@ suspend fun main() {
             info("The following images with tags will be pushed: ${imageIds.joinToString(", ")}")
             val imageIdsToPush = mutableListOf<String>()
             inputs.destinationHosts.hosts.forEach { host ->
-                info("\tPusing images with tags to [$host]")
+                info("\tTagging image IDs for host: [$host]")
 
                 imageIds.forEach { imageAndTag ->
                     val imageId = "$host/$imageAndTag"
