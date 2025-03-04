@@ -108,7 +108,7 @@ Attempted to parse: ${inputName.actionName}
 
 The input was:
 --- BEGIN INPUT ---
-$this
+${inputName.actionName}: $this
 --- END  INPUT ---
 
 Make that the input is an enum of the type ${T::class.simpleName} e.g.,:
@@ -134,20 +134,22 @@ Valid values are: ${values.joinToString(", ")}
 }
 
 private inline fun <reified T> String.parseYamlList(inputName: InputName): List<T> {
+    val codeIndent = "    "
     val defaultErrorContent = """
 Attempted to parse: ${inputName.actionName}
 
 The input was:
 --- BEGIN INPUT ---
-$this
+${inputName.actionName}: |
+${this.prependIndent(codeIndent)}
 --- END  INPUT ---
 
 Make that the input is a string containing a yaml list of strings, e.g.,:
 
 ${inputName.actionName}: |
-    - foo
-    - bar
-    - baz
+$codeIndent- foo
+$codeIndent- bar
+$codeIndent- baz
         """
 
     try {
