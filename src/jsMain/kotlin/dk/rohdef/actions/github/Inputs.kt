@@ -95,7 +95,7 @@ fun Throwable.asParsingError(message: String, defaultErrorContent: String) : Not
 $message
 
 $defaultErrorContent
-        """ ,
+        """,
         this,
     )
 }
@@ -133,7 +133,7 @@ Valid values are: ${values.joinToString(", ")}
     }
 }
 
-private fun <T> String.parseYamlList(inputName: InputName): List<T> {
+private inline fun <reified T> String.parseYamlList(inputName: InputName): List<T> {
     val defaultErrorContent = """
 Attempted to parse: ${inputName.actionName}
 
