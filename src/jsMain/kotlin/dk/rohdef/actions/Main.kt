@@ -107,14 +107,24 @@ suspend fun main() {
                 }
             }
 
+            val imagesFailed =  mutableListOf<String>()
             val imagesPushed =  mutableListOf<String>()
             imageIdsToPush.forEach { imageId ->
-                info("""docker push "$imageId" """)
-                imagesPushed += imageId
+                val pushExecution = Exec.getExecOutput(
+                    "docker",
+                    arrayOf("push", imageId),
+                ).await()
+
+                when (pushExecution.exitCode) {
+                    0 -> imagesPushed += imageId
+                    else -> imagesPushed += imageId
+                }
             }
             setOutput(OutputName.IMAGES_PUSHED, imagesPushed.map { "- $it" }.joinToString("\n"))
+            if (imagesFailed.isNotEmpty()) {
+                setFailed("Could not push all images IDs, failed IDs are: " + imagesFailed.joinToString("\n"))
+            }
 
-            // TODO when no digest, maybe not fail? Or perhaps make it optional to fail?
             val imageDigestOutput = Exec.getExecOutput(
                 "docker",
                 arrayOf("inspect", "--format", "{{index .RepoDigests 0}}", inputs.imageId.value)
