@@ -92,10 +92,10 @@ data class Inputs(
 fun Throwable.asParsingError(message: String, defaultErrorContent: String) : Nothing {
     throw IllegalArgumentException(
         """
-            $message
+$message
 
-            $defaultErrorContent
-        """.trimIndent(),
+$defaultErrorContent
+        """ ,
         this,
     )
 }
@@ -104,19 +104,19 @@ private inline fun <reified T : Enum<T>> String.parseEnumInput(inputName: InputN
     val values = enumValues<T>().toList()
 
     val defaultErrorContent = """
-            Attempted to parse: ${inputName.actionName}
+Attempted to parse: ${inputName.actionName}
 
-            The input was:
-            --- BEGIN INPUT ---
-            $this
-            --- END  INPUT ---
+The input was:
+--- BEGIN INPUT ---
+$this
+--- END  INPUT ---
 
-            Make that the input is an enum of the type ${T::class.simpleName} e.g.,:
+Make that the input is an enum of the type ${T::class.simpleName} e.g.,:
 
-            ${inputName.actionName}: ${values.firstOrNull()}
+${inputName.actionName}: ${values.firstOrNull()}
 
-            Valid values are: ${values.joinToString(", ")}
-        """.trimIndent()
+Valid values are: ${values.joinToString(", ")}
+        """
 
     try {
         return enumValueOf<T>(this.uppercase())
@@ -135,20 +135,20 @@ private inline fun <reified T : Enum<T>> String.parseEnumInput(inputName: InputN
 
 private fun <T> String.parseYamlList(inputName: InputName): List<T> {
     val defaultErrorContent = """
-            Attempted to parse: ${inputName.actionName}
+Attempted to parse: ${inputName.actionName}
 
-            The input was:
-            --- BEGIN INPUT ---
-            $this
-            --- END  INPUT ---
+The input was:
+--- BEGIN INPUT ---
+$this
+--- END  INPUT ---
 
-            Make that the input is a string containing a yaml list of strings, e.g.,:
+Make that the input is a string containing a yaml list of strings, e.g.,:
 
-            ${inputName.actionName}: |
-                - foo
-                - bar
-                - baz
-        """.trimIndent()
+${inputName.actionName}: |
+    - foo
+    - bar
+    - baz
+        """
 
     try {
         return Yaml.default.decodeFromString(this)
